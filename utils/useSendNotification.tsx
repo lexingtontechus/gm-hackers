@@ -1,23 +1,23 @@
 import { useToast } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
-import { useW3iAccount } from "@web3inbox/widget-react";
-import { INotification } from "./types";
-import { sendNotification } from "./fetchNotify";
+import { INotification } from "../utils/types";
+import { sendNotification } from "../utils/fetchNotify";
+import { useAccount } from "wagmi";
 
 function useSendNotification() {
   const [isSending, setIsSending] = useState<boolean>(false);
   const toast = useToast();
-  const { account } = useW3iAccount();
+  const { address } = useAccount();
 
   const handleSendNotification = useCallback(
     async (notification: INotification) => {
-      if (!account) {
+      if (!address) {
         return;
       }
       setIsSending(true);
       try {
-        const { success, message } = await sendNotification({
-          accounts: [account],
+        const { success } = await sendNotification({
+          accounts: [`eip155:1:${address}`],
           notification,
         });
         setIsSending(false);
@@ -39,7 +39,7 @@ function useSendNotification() {
         });
       }
     },
-    [toast, account]
+    [toast],
   );
 
   return {

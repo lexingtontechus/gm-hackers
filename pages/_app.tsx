@@ -1,62 +1,89 @@
 import type { AppProps } from "next/app";
-import { ChakraProvider, Box, Flex, Grid, GridItem } from "@chakra-ui/react";
-import { WagmiConfig } from "wagmi";
+import {
+  ChakraProvider,
+  Flex,
+  Grid,
+  GridItem,
+  useColorMode,
+} from "@chakra-ui/react";
+import { WagmiProvider, http } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { theme } from "../styles/theme";
 import Footer from "../components/core/Footer";
-import "@web3inbox/widget-react/dist/compiled.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import Navbar from "../components/core/Navbar";
+//import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
+import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { createWeb3Modal } from "@web3modal/wagmi/react";
 
-// 1. Get projectID at https://cloud.walletconnect.com
+import { initWeb3InboxClient } from "@web3inbox/react";
+
+import { ThemeStore } from "../utils/themeStore";
+import { useEffect } from "react";
+import Layout from "../components/Layout";
+import DevTimeStamp from "../components/DevTimeStamp";
+
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID as string;
+const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
+
 if (!projectId) {
   throw new Error("You need to provide NEXT_PUBLIC_PROJECT_ID env variable");
 }
 
-// 2. Configure Web3Modal
-const chains = [mainnet];
 const wagmiConfig = defaultWagmiConfig({
-  chains,
+  chains: [mainnet],
+  transports: {
+    [mainnet.id]: http(),
+  },
   projectId,
-  appName: "GM Hackers",
+  metadata: {
+    name: "GM Hackers",
+    description: "GM Hackers",
+    url: "https://hackers.gm.walletconnect.com/",
+    icons: ["https://hackers.gm.walletconnect.com/favicon.ico"],
+    //   verifyUrl: "https://hackers.gm.walletconnect.com/",
+  },
 });
 
-createWeb3Modal({ wagmiConfig, projectId, chains });
+const queryClient = new QueryClient();
+
+initWeb3InboxClient({
+  projectId,
+  domain: appDomain,
+  allApps: process.env.NODE_ENV !== "production",
+});
+
+const modal = createWeb3Modal({
+  wagmiConfig,
+  projectId,
+  enableAnalytics: true,
+});
+
+ThemeStore.setModal(modal);
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { colorMode } = useColorMode();
+
+  useEffect(() => {
+    if (ThemeStore.state.modal) {
+      ThemeStore.state.modal.setThemeMode(colorMode);
+    }
+  }, [colorMode]);
+
   return (
-    <>
-      <ChakraProvider theme={theme}>
-        <WagmiConfig config={wagmiConfig}>
-          <Grid
-            templateAreas={`"header" "main" "footer"`}
-            w="100%"
-            width="100%"
-            gridTemplateRows={"100px 3f 40px"}
-            gridTemplateColumns={"1fr"}
-            paddingY="2em"
-          >
-            <GridItem area={"header"} padding={4}>
-              <Navbar />
-            </GridItem>
-            <GridItem area={"main"} padding={10}>
-              <Flex
-                flexDirection={"column"}
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                <Component {...pageProps} />
-              </Flex>
-            </GridItem>
+    <ChakraProvider theme={theme}>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <Layout>
+            <DevTimeStamp />
+            <Component {...pageProps} />
             <GridItem area={"footer"}>
               <Footer />
             </GridItem>
-          </Grid>
-        </WagmiConfig>
-      </ChakraProvider>
-    </>
+          </Layout>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </ChakraProvider>
   );
 }
 

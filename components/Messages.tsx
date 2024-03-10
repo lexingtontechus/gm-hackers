@@ -1,3 +1,4 @@
+/* eslint no-use-before-define: 0 */
 import {
   AccordionButton,
   AccordionIcon,
@@ -6,27 +7,31 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  Button,
   AlertTitle,
   Box,
-  CloseButton,
   Flex,
   Heading,
   Image,
   Text,
 } from "@chakra-ui/react";
-import { useMessages, useW3iAccount } from "@web3inbox/widget-react";
+import { useNotificationTypes, useNotifications } from "@web3inbox/react";
 import Link from "next/link";
 import React from "react";
 
 function Messages() {
-  const { account } = useW3iAccount();
-  const { messages, deleteMessage } = useMessages(account);
+  const {
+    data: notifications,
+    fetchNextPage,
+    isLoadingNextPage,
+  } = useNotifications(3, true);
+  const { data: notificationTypes } = useNotificationTypes();
 
   return (
     <AccordionItem>
-      <AccordionButton>
+      <AccordionButton py="4">
         <Heading fontSize="md" as="span" flex="1" textAlign="left">
-          Last Messages
+          Last Notifications (useNotifications)
         </Heading>
         <AccordionIcon />
       </AccordionButton>
@@ -38,52 +43,44 @@ function Messages() {
           gap={2}
           position={"relative"}
         >
-          {!messages?.length ? (
+          <Button onClick={fetchNextPage} isLoading={isLoadingNextPage}>
+            Get next page
+          </Button>
+
+          {!notifications?.length ? (
             <Text>No messages yet.</Text>
           ) : (
-            messages
-              .sort((a, b) => b.id - a.id)
-              .map(({ id, message }) => (
-                <Alert
-                  as={Link}
-                  href={message.url}
-                  target="_blank"
-                  key={id}
-                  status="info"
-                  colorScheme={
-                    message.type === "transactional" ? "blue" : "purple"
-                  }
-                  rounded="xl"
-                >
-                  <AlertIcon />
+            notifications.map(({ id, ...message }) => (
+              <Alert
+                as={Link}
+                href={message.url ?? "#"}
+                target="_blank"
+                key={id}
+                status="info"
+                colorScheme={
+                  message.type === "transactional" ? "blue" : "purple"
+                }
+                rounded="xl"
+              >
+                <AlertIcon />
 
-                  <Flex flexDir={"column"} flexGrow={1}>
-                    <AlertTitle>{message.title}</AlertTitle>
-                    <AlertDescription flexGrow={1}>
-                      {message.body}
-                    </AlertDescription>
-                  </Flex>
-                  <Flex w="60px" justifyContent="center">
-                    <Image
-                      src={message.icon}
-                      alt="notification image"
-                      height="60px"
-                      rounded="full"
-                      alignSelf="center"
-                    />
-                  </Flex>
-                  <CloseButton
-                    alignSelf="flex-start"
-                    position="relative"
-                    right={-1}
-                    top={-1}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      deleteMessage(id);
-                    }}
+                <Flex flexDir={"column"} flexGrow={1}>
+                  <AlertTitle>{message.title}</AlertTitle>
+                  <AlertDescription flexGrow={1}>
+                    {message.body}
+                  </AlertDescription>
+                </Flex>
+                <Flex w="60px" justifyContent="center">
+                  <Image
+                    src={notificationTypes?.[message.type]?.imageUrls?.md}
+                    alt="notification image"
+                    height="60px"
+                    rounded="full"
+                    alignSelf="center"
                   />
-                </Alert>
-              ))
+                </Flex>
+              </Alert>
+            ))
           )}
         </AccordionPanel>
       </Box>

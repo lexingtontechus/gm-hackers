@@ -1,3 +1,4 @@
+/* eslint no-use-before-define: 0 */ 
 import React, { useEffect, useState } from "react";
 import {
   AccordionItem,
