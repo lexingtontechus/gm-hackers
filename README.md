@@ -1,4 +1,4 @@
-# GM Hackers (Web3Inbox, Next.js, wagmi, React, TypeScript)
+# Forked & Reactored GM Hackers (Web3Inbox, Next.js, wagmi, React, TypeScript)
 
 🔗 Live dapp demo - https://hackers.gm.walletconnect.com/  
 📚 WalletConnect Web3Inbox Docs - https://docs.walletconnect.com/2.0/web3inbox/core-components/usage
@@ -52,6 +52,10 @@ npm run build
 
 The `did.json` file needs to be hosted on a publicly available domain. Although Vercel and similar alternatives work great for the actual deployment, any dev working with Notify API might like a hot-reloadable deployment. This is where tunnels come in.
 Follow the following instructions to expose your app from localhost to be publicly available:
+
+## Additional note
+Deploy prod did.json on first Git commit. 
+Subsequent commits to exlude did.json via .gitignore
 
 [Instructions adapted from Cloudflare](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/#use-trycloudflare)
 

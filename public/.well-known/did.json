@@ -3,12 +3,12 @@
     "https://www.w3.org/ns/did/v1",
     "https://w3id.org/security/suites/jws-2020/v1"
   ],
-  "id": "did:web:n4hfwc-3000.csb.app",
+  "id": "did:web:7qlcjz-3000.csb.app",
   "verificationMethod": [
     {
-      "id": "did:web:n4hfwc-3000.csb.app#wc-notify-subscribe-key",
+      "id": "did:web:7qlcjz-3000.csb.app#wc-notify-subscribe-key",
       "type": "JsonWebKey2020",
-      "controller": "did:web:n4hfwc-3000.csb.app",
+      "controller": "did:web:7qlcjz-3000.csb.app",
       "publicKeyJwk": {
         "kty": "OKP",
         "crv": "X25519",
@@ -16,9 +16,9 @@
       }
     },
     {
-      "id": "did:web:n4hfwc-3000.csb.app#wc-notify-authentication-key",
+      "id": "did:web:7qlcjz-3000.csb.app#wc-notify-authentication-key",
       "type": "JsonWebKey2020",
-      "controller": "did:web:n4hfwc-3000.csb.app",
+      "controller": "did:web:7qlcjz-3000.csb.app",
       "publicKeyJwk": {
         "kty": "OKP",
         "crv": "Ed25519",
@@ -26,6 +26,6 @@
       }
     }
   ],
-  "keyAgreement": ["did:web:n4hfwc-3000.csb.app#wc-notify-subscribe-key"],
-  "authentication": ["did:web:n4hfwc-3000.csb.app#wc-notify-authentication-key"]
+  "keyAgreement": ["did:web:7qlcjz-3000.csb.app#wc-notify-subscribe-key"],
+  "authentication": ["did:web:7qlcjz-3000.csb.app#wc-notify-authentication-key"]
 }
