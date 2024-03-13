@@ -6,7 +6,7 @@ import {
   GridItem,
   useColorMode,
 } from "@chakra-ui/react";
-import { WagmiProvider, http } from "wagmi";
+import { cookieStorage, createStorage, WagmiProvider, http } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { theme } from "../styles/theme";
 import Footer from "../components/core/Footer";
@@ -29,8 +29,30 @@ const appDomain = process.env.NEXT_PUBLIC_APP_DOMAIN as string;
 if (!projectId) {
   throw new Error("You need to provide NEXT_PUBLIC_PROJECT_ID env variable");
 }
+const metadata = {
+  name: "Web3Modal",
+  description: "Web3Modal Example",
+  url: "https://web3modal.com", // origin must match your domain & subdomain
+  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+};
 
-const wagmiConfig = defaultWagmiConfig({
+// Create wagmiConfig
+export const wagmiConfig = defaultWagmiConfig({
+  chains: [mainnet], // required
+  projectId, // required
+  metadata, // required
+  ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
+  enableWalletConnect: true, // Optional - true by default
+  enableInjected: true, // Optional - true by default
+  enableEIP6963: true, // Optional - true by default
+  enableCoinbase: true, // Optional - true by default
+});
+
+{
+  /*const wagmiConfig = defaultWagmiConfig({
   chains: [mainnet],
   transports: {
     [mainnet.id]: http(),
@@ -39,12 +61,13 @@ const wagmiConfig = defaultWagmiConfig({
   metadata: {
     name: "GM Hackers",
     description: "GM Hackers",
-    url: "https://hackers.gm.walletconnect.com/",
-    icons: ["https://hackers.gm.walletconnect.com/favicon.ico"],
+    url: "https://gm-hackers.lexingtontech.us/",
+    icons: ["/favicon.ico"],
     //   verifyUrl: "https://hackers.gm.walletconnect.com/",
   },
 });
-
+*/
+}
 const queryClient = new QueryClient();
 
 initWeb3InboxClient({
